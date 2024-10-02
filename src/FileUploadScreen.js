@@ -14,7 +14,7 @@ function FileUploadScreen({ userData }) {
     // Handle file upload and analysis here
 //   useEffect(() => {
     if (selectedFile) {
-      const genAI = new GoogleGenerativeAI('AIzaSyDnfzPMGwfQqQWWXfrRkHXPhkEbtSxEtCg');
+      const genAI = new GoogleGenerativeAI('api key');
       const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
     //   const prompt = 'Analyze this file and share the information extracted in tabular format, is it a man or woman in photograph. how does the person looks ? can you compare it with any celebrity'; // Replace with your desired prompt

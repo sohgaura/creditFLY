@@ -15,6 +15,7 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 
 
+
 function App() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [response, setResponse] = useState(null);
@@ -36,7 +37,7 @@ function App() {
     const handleAnalyze = async () => {
     // if (selectedFile) {
       if (formData.file) {
-      const genAI = new GoogleGenerativeAI('AIzaSyDnfzPMGwfQqQWWXfrRkHXPhkEbtSxEtCg---');
+      const genAI = new GoogleGenerativeAI('api key');
       const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
       const prompt = 'limit your responce to maximum 30 words considering all lines and ensure consistent response wording. The following file represents the financial cash flow of a business account in last 1 month, Do a credit risk analysis for the account holder and suggest maximum loan amount that can be lended to this business for short term 1 to 3 months give reason for the deciding of amount for each tenure. Give the output in the format "Mr. <Name of the account holder> You can apply for loan Amount : line one calculated amount Rupees for calculated tenure ; similarly line 2 and line 3; give three tenure options 1 month two month and three months in three lines "  you must give a credit recommendation ,  . the file starts now:'; // Replace with your desired prompt
