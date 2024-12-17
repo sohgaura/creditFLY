@@ -12,7 +12,7 @@
     "react-pdf-viewer": "^0.1.0",
     "react-router-dom": "^6.26.2",
     "react-scripts": "5.0.1",
-    "@google/generativeai": "^1.0.0",
+    "@google/generativeai": "0.21.0",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
