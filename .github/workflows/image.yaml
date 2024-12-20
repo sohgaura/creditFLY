@@ -1,14 +1,8 @@
 name: Image
-
+run-name: build image and provenance
 on:
   push:
-    branches:
-      - master
-  pull_request:
-    branches:
-      - master
-    types: [ labeled, unlabeled, opened, synchronize, reopened ]
-
+  
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
