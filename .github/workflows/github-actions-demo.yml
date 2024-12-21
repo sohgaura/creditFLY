@@ -19,9 +19,15 @@ jobs:
       -
         name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: dockerdk/creditfly 
       -
         name: Build and push
         uses: docker/build-push-action@v6
         with:
           push: true
+          provenance: mode=max
           tags: dockerdk/creditfly:latest
