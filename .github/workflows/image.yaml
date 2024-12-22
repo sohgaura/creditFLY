@@ -59,7 +59,7 @@ jobs:
     uses: ./.github/workflows/image-reuse.yaml
     with:
       docker_image_name: docker.io/dockerdk/creditfly:provenance
-      ghcr_image_name: ghcr.io/argoproj/argo-cd/argocd:provenance
+      ghcr_image_name: ghcr.io/creditfly:provenance
       # docker_image_name: docker.io/dockerdk/creditfly:${{ needs.set-vars.outputs.image-tag }}
       # Note: cannot use env variables to set go-version (https://docs.github.com/en/actions/using-workflows/reusing-workflows#limitations)
       # renovate: datasource=golang-version packageName=golang
