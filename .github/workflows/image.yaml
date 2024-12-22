@@ -59,6 +59,7 @@ jobs:
     uses: ./.github/workflows/image-reuse.yaml
     with:
       docker_image_name: docker.io/dockerdk/creditfly:provenance
+      ghcr_image_name: ghcr.io/argoproj/argo-cd/argocd:provenance
       # docker_image_name: docker.io/dockerdk/creditfly:${{ needs.set-vars.outputs.image-tag }}
       # Note: cannot use env variables to set go-version (https://docs.github.com/en/actions/using-workflows/reusing-workflows#limitations)
       # renovate: datasource=golang-version packageName=golang
@@ -66,6 +67,8 @@ jobs:
     secrets:
       docker_username: ${{ vars.DOCKERDK_USERNAME }}
       docker_password: ${{ secrets.DOCKERDK_TOKEN }}
+      ghcr_username: ${{ github.actor }}
+      ghcr_password: ${{ secrets.GITHUB_TOKEN }}
 
   build-and-publish-provenance: # Push attestations to GHCR, latest image is polluting quay.io
     needs:
@@ -78,9 +81,14 @@ jobs:
     # Must be refernced by a tag. https://github.com/slsa-framework/slsa-github-generator/blob/main/internal/builders/container/README.md#referencing-the-slsa-generator
     uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@v2.0.0
     with:
-      image: docker.io/dockerdk/creditfly:provenance
+      image: ghcr.io/creditfly:provenance
       digest: ${{ needs.build-and-publish.outputs.image-digest }}
       registry-username: ${{ vars.DOCKERDK_USERNAME }}
     secrets:
-      registry-password: ${{ secrets.DOCKERDK_TOKEN }}
+      registry-password: ${{ secrets.GH_TOKEN }}
+      # image: docker.io/dockerdk/creditfly:provenance
+      # digest: ${{ needs.build-and-publish.outputs.image-digest }}
+      # registry-username: ${{ vars.DOCKERDK_USERNAME }}
+    # secrets:
+      # registry-password: ${{ secrets.DOCKERDK_TOKEN }}
 
