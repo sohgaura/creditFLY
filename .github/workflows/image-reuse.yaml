@@ -57,6 +57,7 @@ jobs:
       - name: Setup tags for container image as a CSV type
         run: |
           IMAGE_TAGS=$(for str in \
+            ${{ inputs.ghcr_image_name}} \
             ${{ inputs.docker_image_name}}; do
             echo -n "${str}",;done | sed 's/,$//')
 
@@ -66,6 +67,7 @@ jobs:
       - name: Setup image namespace for signing, strip off the tag
         run: |
           TAGS=$(for tag in \
+            ${{ inputs.ghcr_image_name}} \
             ${{ inputs.docker_image_name}}; do
             echo -n "${tag}" | awk -F ":" '{print $1}' -;done)
           
