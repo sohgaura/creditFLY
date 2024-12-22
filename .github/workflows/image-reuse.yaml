@@ -5,6 +5,9 @@ on:
       docker_image_name:
         required: false
         type: string
+      ghcr_image_name:
+        required: false
+        type: string  
       push:
         required: true
         type: boolean
@@ -17,6 +20,10 @@ on:
         required: false
       docker_password:
         required: false
+      ghcr_username:
+        required: false
+      ghcr_password:
+        required: false  
 
     outputs:
       image-digest:
@@ -67,6 +74,14 @@ jobs:
             echo $TAGS >> $GITHUB_ENV
             echo 'EOF' >> $GITHUB_ENV
 
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567 # v3.3.0
+        with:
+          registry: ghcr.io
+          username: ${{ secrets.ghcr_username }}
+          password: ${{ secrets.ghcr_password }}
+        if: ${{ inputs.ghcr_image_name && inputs.push }}
 
       - name: Login to dockerhub Container Registry
         uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567 # v3.3.0
