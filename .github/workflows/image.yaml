@@ -107,7 +107,7 @@ jobs:
       - name: Determine hashes for provenance
         id: hashes
         run: |
-          hashes=$(echo ${{ 'needs.build-and-publish.outputs.image-digest'}} | jq --raw-output '.[] | {name, "digest": (.extra.Digest // .extra.Checksum)} | select(.digest) | {digest} + {name} | join("  ") | sub("^sha256:";"")' | base64 -w0)
+          hashes=$(echo ${{ 'needs.build-and-publish.outputs.image-digest'}} | base64 -w0)
           echo "hashes=$hashes" >> $GITHUB_OUTPUT
 
   generic-provenance:
