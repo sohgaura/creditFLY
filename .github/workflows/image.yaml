@@ -101,11 +101,17 @@ jobs:
       contents: write #  Needed for release uploads
     if: ${{ github.repository == 'sohgaura/creditFLY' }}
     # Must be refernced by a tag. https://github.com/slsa-framework/slsa-github-generator/blob/main/internal/builders/container/README.md#referencing-the-slsa-generator
-    # steps:
-    #   - name: generate-provenance
-    #     id: generate-provenance
-    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v2.0.0
-    with:
-      base64-subjects: ${{ 'needs.build-and-publish.outputs.image-digest' | base64 -w0}}
-      provenance-name: "test.intoto.jsonl"
-      upload-assets: true
+    steps:
+      - name: generate-hash
+        id: generate-hash
+        run: |
+          hashes=$(echo ${{ 'needs.build-and-publish.outputs.image-digest'}} | jq --raw-output '.[] | {name, "digest": (.extra.Digest // .extra.Checksum)} | select(.digest) | {digest} + {name} | join("  ") | sub("^sha256:";"")' | base64 -w0)
+          echo "hashes=$hashes" >> $GITHUB_OUTPUT
+
+      - name: generate-provenance
+        id: generate-provenance
+        uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v2.0.0
+        with:
+          base64-subjects: "${{ steps.rgenerate-hash.outputs.hashes }}"
+          provenance-name: "test.intoto.jsonl"
+          upload-assets: true
