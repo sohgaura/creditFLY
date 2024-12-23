@@ -93,12 +93,13 @@ jobs:
       # registry-password: ${{ secrets.DOCKERDK_TOKEN }}
 
   generic-provenance:
-    needs: [- build-and-publish]
+    needs: 
+      - build-and-publish
     permissions:
       actions: read # for detecting the Github Actions environment
       id-token: write # Needed for provenance signing and ID
       contents: write #  Needed for release uploads
-    if: github.repository == 'sohgaura/creditFLY'
+    if: ${{ github.repository == 'sohgaura/creditFLY' }}
     # Must be refernced by a tag. https://github.com/slsa-framework/slsa-github-generator/blob/main/internal/builders/container/README.md#referencing-the-slsa-generator
     uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v2.0.0
     with:
