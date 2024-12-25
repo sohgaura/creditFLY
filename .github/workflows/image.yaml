@@ -107,7 +107,7 @@ jobs:
       - name: Determine hashes for provenance
         id: hashes
         run: |
-          hashes=$(echo '[{ ${{ needs.build-and-publish.outputs.image-digest }} }]' | base64 -w0)
+          hashes=$(echo '[{ "digest": ${{ needs.build-and-publish.outputs.image-digest }}, "name": "creditfly" }]' | base64 -w0)
           echo "hashes=$hashes" >> $GITHUB_OUTPUT
 
   generic-provenance:
@@ -133,13 +133,13 @@ jobs:
     uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v2.0.0
     with:
       # base64-subjects: "${{ steps.rgenerate-hash.outputs.hashes }}"
-      # base64-subjects: "${{ needs.generate-hash.outputs.hashes}}" 
-      base64-subjects: |
-        [
-          {
-            "digest": "${{ needs.build-and-publish.outputs.image-digest }}",
-            "name": "creditfly"
-          }
-        ] 
+      base64-subjects: "${{ needs.generate-hash.outputs.hashes}}" 
+      # base64-subjects: |
+      #   [
+      #     {
+      #       "digest": "${{ needs.build-and-publish.outputs.image-digest }}",
+      #       "name": "creditfly"
+      #     }
+      #   ] 
       provenance-name: "test.intoto.jsonl"
       upload-assets: true
