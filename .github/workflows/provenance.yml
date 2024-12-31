@@ -1,5 +1,7 @@
 name: SLSA provenance only
+run-name: SLSA provenance only
 on:
+  # push:
   workflow_dispatch:
   # push:
   #   tags:
