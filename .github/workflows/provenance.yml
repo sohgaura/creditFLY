@@ -58,7 +58,7 @@ jobs:
       base64-subjects: "${{ needs.build.outputs.digest }}"
       provenance-name: "test1.intoto.jsonl"
       upload-assets: true
-      upload-tag-name: v99.9
+      # upload-tag-name: v99.9
       compile-generator: true
 
   # This step uploads our artifacts to the GitHub release.
@@ -77,14 +77,10 @@ jobs:
         uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741 # v2.1.0
         with:
           name: artifact2
-      - name: Download jsonl
-        uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741 # v2.1.0
-        with:
-          name: test1.intoto.jsonl
       - name: Upload to release
         uses: softprops/action-gh-release@1e07f4398721186383de40550babbdf2b84acfc5 # v0.1.14
         with:
-          tag_name: v99.9
+          # tag_name: v99.9
           files: |
             artifact1
             artifact2
