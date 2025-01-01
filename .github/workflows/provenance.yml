@@ -58,6 +58,7 @@ jobs:
       base64-subjects: "${{ needs.build.outputs.digest }}"
       provenance-name: "test1.intoto.jsonl"
       upload-assets: true
+      upload-tag-name: v99.9
       compile-generator: true
 
   # This step uploads our artifacts to the GitHub release.
