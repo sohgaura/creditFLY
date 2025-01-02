@@ -36,37 +36,7 @@ jobs:
           echo "Building image for platforms: $IMAGE_PLATFORMS"
           echo "platforms=$IMAGE_PLATFORMS" >> $GITHUB_OUTPUT
 
-  npm-build:
-    outputs:
-      digest: ${{ steps.hash.outputs.digest }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Set up Node.js (for Node.js project)
-        if: matrix.language == 'nodejs'
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-      
-      - name: "build artifacts"
-        run: |
-          # These are some amazing artifacts.
-          # echo "foo" > artifact1
-          # echo "bar" > artifact2
-          npm install
-          npm run build -- --no-eslint-rule no-lone-blocks
-          
-      - name: "generate hash"
-        shell: bash
-        id: hash
-        run: |
-          # sha256sum generates sha256 hash for all artifacts.
-          # base64 -w0 encodes to base64 and outputs on a single line.
-          # sha256sum artifact1 artifact2 ... | base64 -w0
-          # echo "digest=$(sha256sum artifact1 artifact2 | base64 -w0)" >> "${GITHUB_OUTPUT}"
-          echo "digest=$(echo -n "$(cat package-lock.json)" | base64 -w0)" >> "${GITHUB_OUTPUT}"
-          
+         
   
   build-only:
     needs: [set-vars]
@@ -142,6 +112,37 @@ jobs:
           hashes=$(echo creditfly  ${{ needs.build-and-publish.outputs.image-digest }}  | sed s/^sha256:// | base64 -w0)
           echo "hashes=$hashes" >> $GITHUB_OUTPUT
 
+  npm-build:
+    outputs:
+      digest: ${{ steps.hash.outputs.digest }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Node.js (for Node.js project)
+        if: matrix.language == 'nodejs'
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      
+      - name: "build artifacts"
+        run: |
+          # These are some amazing artifacts.
+          # echo "foo" > artifact1
+          # echo "bar" > artifact2
+          npm install
+          npm run build -- --no-eslint-rule no-lone-blocks
+          
+      - name: "generate hash"
+        shell: bash
+        id: hash
+        run: |
+          # sha256sum generates sha256 hash for all artifacts.
+          # base64 -w0 encodes to base64 and outputs on a single line.
+          # sha256sum artifact1 artifact2 ... | base64 -w0
+          # echo "digest=$(sha256sum artifact1 artifact2 | base64 -w0)" >> "${GITHUB_OUTPUT}"
+          echo "digest=$(echo -n "$(cat package-lock.json)" | base64 -w0)" >> "${GITHUB_OUTPUT}"
+ 
   generic-provenance:
     needs: 
       - build-and-publish
