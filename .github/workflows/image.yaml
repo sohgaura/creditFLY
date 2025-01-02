@@ -141,7 +141,9 @@ jobs:
           # base64 -w0 encodes to base64 and outputs on a single line.
           # sha256sum artifact1 artifact2 ... | base64 -w0
           # echo "digest=$(sha256sum artifact1 artifact2 | base64 -w0)" >> "${GITHUB_OUTPUT}"
-          echo "digest=$(echo -n "$(cat package-lock.json)" | base64 -w0)" >> "${GITHUB_OUTPUT}"
+          # echo "digest=$(echo -n "$(cat package-lock.json)" | base64 -w0)" >> "${GITHUB_OUTPUT}"
+          digest=$(echo -n "$(cat package-lock.json)" | base64 -w0)
+          echo "digest=${digest}" >> "$GITHUB_OUTPUT"
  
   generic-provenance:
     needs: 
