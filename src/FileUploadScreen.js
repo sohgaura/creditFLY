@@ -68,6 +68,5 @@ function FileUploadScreen({ userData }) {
     </div>
   );
 }
-{/* <h1>Welcome, {userData.firstName} {userData.lastName}!</h1>
-<p>Mobile Number: {userData.mobileNumber}</p> */}
+
 export default FileUploadScreen;

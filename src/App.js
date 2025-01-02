@@ -56,10 +56,6 @@ function App() {
   );
 }
 
-{/* <Routes>
-<Route path="/" element={<RegistrationForm onRegister={handleRegistration} navigate={navigate} />} />
-<Route path="/file-upload" element={<FileUploadScreen userData={userData} />} />
-</Routes>
-</Router> */}
+
 
 export default App;
