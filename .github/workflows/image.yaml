@@ -125,13 +125,13 @@ jobs:
         with:
           node-version: 18
       
-      - name: "build artifacts"
-        run: |
-          # These are some amazing artifacts.
-          # echo "foo" > artifact1
-          # echo "bar" > artifact2
-          npm install
-          npm run build --silent --no-eslint-rule no-lone-blocks
+      # - name: "build artifacts"
+      #   run: |
+      #     # These are some amazing artifacts.
+      #     # echo "foo" > artifact1
+      #     # echo "bar" > artifact2
+      #     npm install
+      #     npm run build --silent --no-eslint-rule no-lone-blocks
           
       - name: "generate hash"
         shell: bash
