@@ -119,26 +119,23 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      # - name: Set up Node.js (for Node.js project)
-      #   if: matrix.language == 'nodejs'
-      #   uses: actions/setup-node@v3
-      #   with:
-      #     node-version: 18
+      - name: Set up Node.js (for Node.js project)
+        # if: matrix.language == 'nodejs'
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
       
-      # - name: "build artifacts"
-      #   run: |
-      #     # These are some amazing artifacts.
-      #     # echo "foo" > artifact1
-      #     # echo "bar" > artifact2
-      #     npm install
-      #     npm run build --silent --no-eslint-rule no-lone-blocks
-          
-      - name: "generate hash"
-        shell: bash
-        id: hash
+      - name: "build artifacts"
         run: |
-          digest=$(echo -n "$(cat package-lock.json)" | base64 -w0)
-          echo "digest=${digest}" >> "$GITHUB_OUTPUT"
+          npm install
+          npm run build
+          
+      # - name: "generate hash"
+      #   shell: bash
+      #   id: hash
+      #   run: |
+      #     digest=$(echo -n "$(cat package-lock.json)" | base64 -w0)
+      #     echo "digest=${digest}" >> "$GITHUB_OUTPUT"
  
   generic-provenance:
     needs: 
