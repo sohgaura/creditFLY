@@ -135,7 +135,7 @@ jobs:
         id: hash
         # digest=$(sha256sum (echo -n "$(cat package-lock.json)") | base64 -w0)
         run: |
-          digest=$(sha256sum package-lock.json) | base64 -w0)
+          digest=$(sha256sum package-lock.json | base64 -w0)
           echo "digest=${digest}" >> "$GITHUB_OUTPUT"
  
   generic-provenance:
