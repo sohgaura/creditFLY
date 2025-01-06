@@ -171,5 +171,5 @@ jobs:
       #       "name": "creditfly"
       #     }
       #   ] 
-      provenance-name: "npm.jsonl"
+      provenance-name: "npm.intoto.jsonl"
       upload-assets: true
