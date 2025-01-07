@@ -137,6 +137,14 @@ jobs:
         run: |
           digest=$(sha256sum package-lock.json | base64 -w0)
           echo "digest=${digest}" >> "$GITHUB_OUTPUT"
+      
+      - name: Upload artifact1
+        uses: actions/upload-artifact@3cea5372237819ed00197afe530f5a7ea3e805c8 # v3.1.0
+        with:
+          name: package-lock.json
+          path: package-lock.json
+          if-no-files-found: error
+          retention-days: 5          
  
   generic-provenance:
     needs: 
@@ -173,3 +181,23 @@ jobs:
       #   ] 
       provenance-name: "npm.intoto.jsonl"
       upload-assets: true
+      
+ # This step uploads our artifacts to the GitHub release.
+  release:
+    needs: [npm-build, generic-provenance]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    # if: startsWith(github.ref, 'refs/tags/')
+    steps:
+      - name: Download artifact1
+        uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741 # v2.1.0
+        with:
+          name: package-lock.json
+      - name: Upload to release
+        uses: softprops/action-gh-release@1e07f4398721186383de40550babbdf2b84acfc5 # v0.1.14
+        with:
+          # tag_name: v99.9
+          files: |
+            package-lock.json
+            npm.intoto.jsonl
