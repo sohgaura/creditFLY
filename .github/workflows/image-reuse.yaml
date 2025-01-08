@@ -116,8 +116,8 @@ jobs:
           push: ${{ inputs.push }}
           tags: ${{ env.TAGS }}
           target: ${{ inputs.target }}
-          provenance: false
-          sbom: false
+          provenance: true
+          sbom: true
           build-args: |
             GIT_TAG=${{env.GIT_TAG}}
             GIT_COMMIT=${{env.GIT_COMMIT}}
