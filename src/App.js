@@ -12,7 +12,7 @@
 
 
 
-import React, { useState, useEffect } from 'react';
+// import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link  } from 'react-router-dom';
 import RegistrationForm from './RegistrationForm';
 import FileUploadScreen from './FileUploadScreen';
@@ -56,10 +56,6 @@ function App() {
   );
 }
 
-{/* <Routes>
-<Route path="/" element={<RegistrationForm onRegister={handleRegistration} navigate={navigate} />} />
-<Route path="/file-upload" element={<FileUploadScreen userData={userData} />} />
-</Routes>
-</Router> */}
+
 
 export default App;

@@ -36,6 +36,8 @@ jobs:
           echo "Building image for platforms: $IMAGE_PLATFORMS"
           echo "platforms=$IMAGE_PLATFORMS" >> $GITHUB_OUTPUT
 
+         
+  
   build-only:
     needs: [set-vars]
     permissions:
@@ -59,7 +61,7 @@ jobs:
     uses: ./.github/workflows/image-reuse.yaml
     with:
       docker_image_name: docker.io/dockerdk/creditfly:provenance
-      ghcr_image_name: ghcr.io/argoproj/argo-cd/argocd:provenance
+      # ghcr_image_name: ghcr.io/sohgaura/creditfly/creditfly:provenance
       # docker_image_name: docker.io/dockerdk/creditfly:${{ needs.set-vars.outputs.image-tag }}
       # Note: cannot use env variables to set go-version (https://docs.github.com/en/actions/using-workflows/reusing-workflows#limitations)
       # renovate: datasource=golang-version packageName=golang
@@ -67,8 +69,8 @@ jobs:
     secrets:
       docker_username: ${{ vars.DOCKERDK_USERNAME }}
       docker_password: ${{ secrets.DOCKERDK_TOKEN }}
-      ghcr_username: ${{ github.actor }}
-      ghcr_password: ${{ secrets.GITHUB_TOKEN }}
+      # ghcr_username: ${{ github.actor }}
+      # ghcr_password: ${{ secrets.GITHUB_TOKEN }}
 
   build-and-publish-provenance: # Push attestations to GHCR, latest image is polluting quay.io
     needs:
@@ -81,14 +83,121 @@ jobs:
     # Must be refernced by a tag. https://github.com/slsa-framework/slsa-github-generator/blob/main/internal/builders/container/README.md#referencing-the-slsa-generator
     uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@v2.0.0
     with:
-      image: ghcr.io/creditfly:provenance
+    #   image: ghcr.io/sohgaura/creditfly/creditfly:provenance
+    #   digest: ${{ needs.build-and-publish.outputs.image-digest }}
+    #   registry-username: ${{ vars.DOCKERDK_USERNAME }}
+    # secrets:
+    #   registry-password: ${{ secrets.GH_TOKEN }}
+      image: docker.io/dockerdk/creditfly:provenance
       digest: ${{ needs.build-and-publish.outputs.image-digest }}
       registry-username: ${{ vars.DOCKERDK_USERNAME }}
     secrets:
-      registry-password: ${{ secrets.GH_TOKEN }}
-      # image: docker.io/dockerdk/creditfly:provenance
-      # digest: ${{ needs.build-and-publish.outputs.image-digest }}
-      # registry-username: ${{ vars.DOCKERDK_USERNAME }}
-    # secrets:
-      # registry-password: ${{ secrets.DOCKERDK_TOKEN }}
+      registry-password: ${{ secrets.DOCKERDK_TOKEN }}
 
+  generate-hash: 
+    needs: 
+      - build-and-publish
+    permissions:
+      actions: read # for detecting the Github Actions environment
+      id-token: write # Needed for provenance signing and ID
+      contents: write #  Needed for release uploads
+    if: ${{ github.repository == 'sohgaura/creditFLY' }}
+    runs-on: ubuntu-22.04
+    outputs:
+      hashes: ${{ steps.hashes.outputs.hashes}}
+    steps:
+      - name: Determine hashes for provenance
+        id: hashes
+        run: |
+          hashes=$(echo creditfly  ${{ needs.build-and-publish.outputs.image-digest }}  | sed s/^sha256:// | base64 -w0)
+          echo "hashes=$hashes" >> $GITHUB_OUTPUT
+
+  npm-build:
+    outputs:
+      digest: ${{ steps.hash.outputs.digest }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Node.js (for Node.js project)
+        # if: matrix.language == 'nodejs'
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      
+      - name: "build artifacts"
+        run: |
+          npm install
+          npm run build
+          
+      - name: "generate hash"
+        shell: bash
+        id: hash
+        # digest=$(sha256sum (echo -n "$(cat package-lock.json)") | base64 -w0)
+        run: |
+          digest=$(sha256sum package-lock.json | base64 -w0)
+          echo "digest=${digest}" >> "$GITHUB_OUTPUT"
+      
+      - name: Upload artifact1
+        uses: actions/upload-artifact@3cea5372237819ed00197afe530f5a7ea3e805c8 # v3.1.0
+        with:
+          name: package-lock.json
+          path: package-lock.json
+          if-no-files-found: error
+          retention-days: 5          
+ 
+  generic-provenance:
+    needs: 
+      - build-and-publish
+      - generate-hash
+      - npm-build
+    permissions:
+      actions: read # for detecting the Github Actions environment
+      id-token: write # Needed for provenance signing and ID
+      contents: write #  Needed for release uploads
+    # if: ${{ github.repository == 'sohgaura/creditFLY' }}
+    # runs-on: ubuntu-22.04
+    # Must be refernced by a tag. https://github.com/slsa-framework/slsa-github-generator/blob/main/internal/builders/container/README.md#referencing-the-slsa-generator
+    # steps:
+    #   - name: generate-hash
+    #     id: generate-hash
+    #     run: |
+    #       hashes=$(echo ${{ 'needs.build-and-publish.outputs.image-digest'}} | jq --raw-output '.[] | {name, "digest": (.extra.Digest // .extra.Checksum)} | select(.digest) | {digest} + {name} | join("  ") | sub("^sha256:";"")' | base64 -w0)
+    #       echo "hashes=$hashes" >> $GITHUB_OUTPUT
+
+      # - name: generate-provenance
+      #   id: generate-provenance
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v2.0.0
+    with:
+      # base64-subjects: "${{ steps.rgenerate-hash.outputs.hashes }}"
+      # base64-subjects: "${{ needs.generate-hash.outputs.hashes}}" 
+      base64-subjects: "${{ needs.npm-build.outputs.digest}}" 
+      # base64-subjects: |
+      #   [
+      #     {
+      #       "digest": "${{ needs.build-and-publish.outputs.image-digest }}",
+      #       "name": "creditfly"
+      #     }
+      #   ] 
+      provenance-name: "npm.intoto.jsonl"
+      upload-assets: true
+      
+ # This step uploads our artifacts to the GitHub release.
+  release:
+    needs: [npm-build, generic-provenance]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    # if: startsWith(github.ref, 'refs/tags/')
+    steps:
+      - name: Download artifact1
+        uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741 # v2.1.0
+        with:
+          name: package-lock.json
+      - name: Upload to release
+        uses: softprops/action-gh-release@1e07f4398721186383de40550babbdf2b84acfc5 # v0.1.14
+        with:
+          # tag_name: v99.9
+          files: |
+            package-lock.json
+            npm.intoto.jsonl

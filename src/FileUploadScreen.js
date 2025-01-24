@@ -1,4 +1,5 @@
 // import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 //import { PDFViewer } from 'react-pdf-viewer';
 // import 'react-pdf-viewer/styles/index.css';
 const { GoogleGenerativeAI } = require("@google/generative-ai");
@@ -67,6 +68,5 @@ function FileUploadScreen({ userData }) {
     </div>
   );
 }
-{/* <h1>Welcome, {userData.firstName} {userData.lastName}!</h1>
-<p>Mobile Number: {userData.mobileNumber}</p> */}
+
 export default FileUploadScreen;
