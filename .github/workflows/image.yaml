@@ -72,7 +72,7 @@ jobs:
       # ghcr_username: ${{ github.actor }}
       # ghcr_password: ${{ secrets.GITHUB_TOKEN }}
 
-  # build-and-publish-provenance: # Push attestations to GHCR, latest image is polluting quay.io
+  build-and-publish-provenance: # Push attestations to GHCR, latest image is polluting quay.io
     needs:
       - build-and-publish
     permissions:
