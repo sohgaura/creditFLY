@@ -73,26 +73,26 @@ jobs:
       # ghcr_password: ${{ secrets.GITHUB_TOKEN }}
 
   # build-and-publish-provenance: # Push attestations to GHCR, latest image is polluting quay.io
-  #   needs:
-  #     - build-and-publish
-  #   permissions:
-  #     actions: read # for detecting the Github Actions environment.
-  #     id-token: write # for creating OIDC tokens for signing.
-  #     packages: write # for uploading attestations. (https://github.com/slsa-framework/slsa-github-generator/blob/main/internal/builders/container/README.md#known-issues)
-  #   if: ${{ github.repository == 'sohgaura/creditFLY' && github.event_name == 'push' }}
-  #   # Must be refernced by a tag. https://github.com/slsa-framework/slsa-github-generator/blob/main/internal/builders/container/README.md#referencing-the-slsa-generator
-  #   uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@v2.0.0
-  #   with:
-  #     image: ghcr.io/sohgaura/creditfly/creditfly:provenance
-  #     digest: ${{ needs.build-and-publish.outputs.image-digest }}
-  #     registry-username: ${{ vars.DOCKERDK_USERNAME }}
-  #   secrets:
-  #     registry-password: ${{ secrets.GH_TOKEN }}
-  #     # image: docker.io/dockerdk/creditfly:provenance
-  #     # digest: ${{ needs.build-and-publish.outputs.image-digest }}
-  #     # registry-username: ${{ vars.DOCKERDK_USERNAME }}
-  #   # secrets:
-  #     # registry-password: ${{ secrets.DOCKERDK_TOKEN }}
+    needs:
+      - build-and-publish
+    permissions:
+      actions: read # for detecting the Github Actions environment.
+      id-token: write # for creating OIDC tokens for signing.
+      packages: write # for uploading attestations. (https://github.com/slsa-framework/slsa-github-generator/blob/main/internal/builders/container/README.md#known-issues)
+    if: ${{ github.repository == 'sohgaura/creditFLY' && github.event_name == 'push' }}
+    # Must be refernced by a tag. https://github.com/slsa-framework/slsa-github-generator/blob/main/internal/builders/container/README.md#referencing-the-slsa-generator
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@v2.0.0
+    with:
+    #   image: ghcr.io/sohgaura/creditfly/creditfly:provenance
+    #   digest: ${{ needs.build-and-publish.outputs.image-digest }}
+    #   registry-username: ${{ vars.DOCKERDK_USERNAME }}
+    # secrets:
+    #   registry-password: ${{ secrets.GH_TOKEN }}
+      image: docker.io/dockerdk/creditfly:provenance
+      digest: ${{ needs.build-and-publish.outputs.image-digest }}
+      registry-username: ${{ vars.DOCKERDK_USERNAME }}
+    secrets:
+      registry-password: ${{ secrets.DOCKERDK_TOKEN }}
 
   generate-hash: 
     needs: 
